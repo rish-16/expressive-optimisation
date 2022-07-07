@@ -18,6 +18,7 @@ servings = {
 
 class GCN(nn.Module):
     def __init__(self, indim, hidden, outdim):
+        super().__init__()
         self.conv1 = tgnn.GraphConv(indim, hidden)
         self.conv2 = tgnn.GraphConv(hidden, hidden)
         self.conv3 = tgnn.GraphConv(hidden, outdim)
@@ -29,8 +30,23 @@ class GCN(nn.Module):
 
         return out
 
+class GAT(nn.Module):
+    def __init__(self, indim, hidden, outdim):
+        super().__init__()
+        self.conv1 = tgnn.GATConv(indim, hidden)
+        self.conv2 = tgnn.GATConv(hidden, hidden)
+        self.conv3 = tgnn.GATConv(hidden, outdim)
+
+    def forward(self, x, edge_idx):
+        x = torch.relu(self.conv1(x, edge_idx))
+        x = torch.relu(self.conv2(x, edge_idx))
+        out = torch.softmax(self.conv3(x, edge_idx), 1)
+
+        return out
+
 class GIN(nn.Module):
     def __init__(self, indim, hidden, outdim):
+        super().__init__()
         self.l1 = nn.Linear()
         self.conv1 = tgnn.GINConv(nn, )
         self.conv2 = tgnn.GraphConv(hidden, hidden)
@@ -41,4 +57,4 @@ class GIN(nn.Module):
         x = torch.relu(self.conv2(x, edge_idx))
         out = torch.softmax(self.conv3(x, edge_idx), 1)
 
-        return out        
+        return out
